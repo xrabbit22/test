@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Site de Vidéos</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+      scroll-behavior: smooth;
+      background: linear-gradient(to right, #8e2de2, #4a00e0);
+      color: #fff;
+    }
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 10;
+    }
+    .dark-mode .logo {
+      background-color: #333;
+    }
+    .videos {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      gap: 20px;
+    }
+    .video-item {
+      margin-bottom: 20px;
+      position: relative;
+      width: 100%;
+      max-width: 800px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .video-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+    .video-item iframe {
+      width: 100%;
+      height: 315px;
+    }
+    .like-button {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: blue;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .liked {
+      background-color: red;
+    }
+    .like-button:hover {
+      transform: scale(1.1);
+    }
+    .author {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      padding: 10px;
+    }
+    .author img {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .author img:hover {
+      transform: scale(1.1);
+    }
+    .mode-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+    }
+    .dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="age-verification" id="ageVerification">
+    <p>Vous avez +18 ans ?</p>
+    <button class="yes-button" onclick="ageVerification(true)">+18</button>
+    <button class="no-button" onclick="ageVerification(false)">No</button>
+  </div>
+
+  <div class="logo">
+    <img src="https://i.imgur.com/NejcOgm.png" alt="Logo" style="max-height: 80px;">
+  </div>
+
+  <div class="videos" id="videos">
+    <!-- Vidéos ici -->
+  </div>
+
+  <img src="lightmode.png" alt="Mode Toggle" class="mode-toggle" id="modeToggle" onclick="toggleMode()">
+
+  <script>
+  const videos = [
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/659d469feed45" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Kristen Flows', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=ax9rFp6y6YNVepSU)2aec9cdc-c3eb-4883-a403-69270e29c263.jpg', link: 'https://fr.pornhub.com/model/kristen-flows' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/66d74bd84adf4" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'NoLube', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=JvK6oZy4u5uJZXkc)b0e6cf6d-ad5a-4a62-8b60-6713ca3eb350.jpg', link: 'https://fr.pornhub.com/model/nolube' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/66877444f321e" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Teen Meat', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=kw3jKHA3ZpmxhpVD)e1f66a0b-4c60-4aa7-b38f-c1f01ae61b32.jpg', link: 'https://fr.pornhub.com/model/teen-meat' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/66d2926c83b38" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Sweetie Fox', img: 'https://ei.phncdn.com/(m=ewILGCjadOf)(mh=59qrk8LnBE3Z9kTL)43ca43da-b27e-42f2-b237-40c5c13261b1.jpg', link: 'https://fr.pornhub.com/model/sweetie-fox' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/669ab0d8e7672" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Jak Knife', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=SQ1LDJ3plYCkdYne)56285c0c-c68d-4c47-b55b-688a60c5247c.jpg', link: 'https://fr.pornhub.com/pornstar/jak-knife' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/656a79a5e80e4" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Ollie Gahan', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=GKNuC1H4qyFH_0PG)222f8cf9-dddf-4c83-ac7d-8cb9ad377040.jpg', link: 'https://fr.pornhub.com/model/ollie-gahan' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/ph61fafc7d43c37" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Squir7een', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=TIDwchDmFhuo22N5)5948fcc4-07dd-4dc3-a38b-62c01efa748e.jpg', link: 'https://fr.pornhub.com/model/squir7een' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/66291cf4851c9" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'POVD', img: 'https://ei.phncdn.com/pics/sites/000/010/642/avatar1411755589/(m=eKbzGe)(mh=fx2lNBcwS6LC-Ogf)200x200.jpg', link: 'https://fr.pornhub.com/channels/povd' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/66c9dd72b18ee" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Sweetie Fox', img: 'https://ei.phncdn.com/(m=ewILGCjadOf)(mh=59qrk8LnBE3Z9kTL)43ca43da-b27e-42f2-b237-40c5c13261b1.jpg', link: 'https://fr.pornhub.com/model/sweetie-fox' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/66f495105d48e" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Teddy Tarantino', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=TjupnymXTU5Md3-W)48507882-dede-4ea9-8886-8c40d8006047.jpg', link: 'https://fr.pornhub.com/model/teddy-tarantino' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/64c72c856e15e" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Sisi Rose', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=dtlKtmHOip_L-JIM)8bec21c4-9c67-49a0-9f7a-e132c509b530.jpg', link: 'https://fr.pornhub.com/pornstar/sisi-rose' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/66e881788d496" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Littleangel84', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=_Etqwggn2cf-mRS9)81ec465f-669b-4b65-8f01-6298a4bcf0a6.jpg', link: 'https://fr.pornhub.com/pornstar/littleangel84' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/6643c4de58326" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Martin Spell', img: 'https://ei.phncdn.com/(m=bLazqgKlbyaT)(mh=bW0h3fNcEbRGEJPN)05cec778-8f50-4fe7-ab31-91e335d5b444.jpg', link: 'https://fr.pornhub.com/pornstar/martin-spell' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/668acb7005895" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Diana Rider', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=PXZCKs9gs5lpZPVe)fecc06ac-a9cd-469a-ae43-31473af17653.jpg', link: 'https://fr.pornhub.com/model/diana-rider' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/66cf0b7f638e7" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Porn Force', img: 'https://ei.phncdn.com/(m=ewILGCjadOf)(mh=oRsmtVZZCrSqamvB)fb15e07a-0ec1-4325-9633-2be1b2200cac.jpg', link: 'https://fr.pornhub.com/model/porn-force' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/63da7bb4542cf" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Kristen Flows', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=ax9rFp6y6YNVepSU)2aec9cdc-c3eb-4883-a403-69270e29c263.jpg', link: 'https://fr.pornhub.com/model/kristen-flows' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/6618f9a07da1a" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'DianaWellness', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=yxA-9nHLRiThQC7k)d3a2b03e-a8d4-44b9-aa94-bc6b39b7199a.jpg', link: 'https://fr.pornhub.com/model/dianawellness' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/6605ac39ca320" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'ArinaFox', img: 'https://ei.phncdn.com/(m=ewILGCjadOf)(mh=IPi6BGDZnnAGNo4j)9292e943-b9fc-4321-a651-e3f307fe2ab7.jpg', link: 'https://fr.pornhub.com/model/arinafox' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/658c49343b006" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Julie Jess', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=H2f8UKsyhkah8BTq)f926feb8-a9de-4418-af47-a23bb5ba6f07.jpg', link: 'https://fr.pornhub.com/model/julie-jess' }
+    },
+    { 
+      embedCode: `<iframe src="https://www.pornhub.com/embed/66d0b35a83724" frameborder="0" width="560" height="340" scrolling="no" allowfullscreen></iframe>`, 
+      author: { name: 'Jadilica', img: 'https://ei.phncdn.com/(m=bLWsSeKlbyaT)(mh=oRcj5UW1zWthVt9N)827ce219-7e0a-4b34-9ac3-2aa73880c0b9.jpg', link: 'https://fr.pornhub.com/pornstar/jadilica' }
+    }
+  ];
+
+  function loadVideos() {
+    const videosContainer = document.getElementById('videos');
+    videos.forEach(video => {
+      const videoItem = document.createElement('div');
+      videoItem.classList.add('video-item');
+      videoItem.innerHTML = `
+        ${video.embedCode}
+        <div class="author">
+          <a href="${video.author.link}" target="_blank">
+            <img src="${video.author.img}" alt="${video.author.name}">
+            <span>${video.author.name}</span>
+          </a>
+        </div>
+        <button class="like-button" onclick="toggleLike(this)">Like</button>
+      `;
+      videosContainer.appendChild(videoItem);
+
+      // Vérifier si la vidéo est déjà aimée
+      const likedVideos = JSON.parse(localStorage.getItem('likedVideos')) || [];
+      const iframeSrc = videoItem.querySelector('iframe').src;
+      if (likedVideos.includes(iframeSrc)) {
+        videoItem.querySelector('.like-button').classList.add('liked');
+      }
+    });
+  }
+
+  function toggleLike(button) {
+    button.classList.toggle('liked');
+    const iframe = button.previousElementSibling.querySelector('iframe');
+    const iframeSrc = iframe.src;
+    let likedVideos = JSON.parse(localStorage.getItem('likedVideos')) || [];
+
+    if (button.classList.contains('liked')) {
+      likedVideos.push(iframeSrc);
+    } else {
+      likedVideos = likedVideos.filter(src => src !== iframeSrc);
+    }
+
+    localStorage.setItem('likedVideos', JSON.stringify(likedVideos));
+  }
+
+  function toggleMode() {
+    document.body.classList.toggle('dark-mode');
+    const modeToggle = document.getElementById('modeToggle');
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      modeToggle.src = isDarkMode ? 'darkmode.png' : 'lightmode.png';
+      localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    }
+
+    if (localStorage.getItem('isAdult') === 'true') {
+      document.getElementById('ageVerification').style.display = 'none';
+      loadVideos();
+    }
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      document.getElementById('modeToggle').src = 'darkmode.png';
+    }
+  </script>
+</body>
+</html>
